@@ -1,0 +1,36 @@
+date,disaster_type,country,region,affected_population,casualties,response_time_hours,response_effectiveness,economic_impact_usd
+2018-01-15,Earthquake,Japan,Asia,50000,120,24,0.85,2500000000
+2018-03-22,Flood,Bangladesh,Asia,100000,45,48,0.72,350000000
+2018-06-10,Hurricane,USA,North America,75000,89,12,0.90,1800000000
+2018-08-05,Wildfire,Australia,Oceania,30000,15,36,0.65,450000000
+2018-10-20,Tsunami,Indonesia,Asia,120000,250,18,0.80,3200000000
+2019-02-14,Drought,Kenya,Africa,200000,30,120,0.55,180000000
+2019-04-18,Tornado,USA,North America,25000,42,6,0.92,620000000
+2019-07-25,Flood,India,Asia,150000,95,60,0.68,890000000
+2019-09-30,Earthquake,Mexico,North America,60000,78,15,0.88,1100000000
+2019-11-12,Wildfire,USA,North America,40000,28,24,0.75,950000000
+2020-01-08,Cyclone,Philippines,Asia,80000,105,30,0.78,720000000
+2020-03-20,Flood,Brazil,South America,90000,52,42,0.70,540000000
+2020-06-15,Earthquake,Turkey,Europe,45000,68,20,0.82,680000000
+2020-08-22,Hurricane,USA,North America,65000,73,10,0.93,1650000000
+2020-10-05,Landslide,Nepal,Asia,35000,88,48,0.62,210000000
+2021-02-10,Earthquake,Chile,South America,55000,92,22,0.84,850000000
+2021-05-18,Flood,China,Asia,110000,67,36,0.76,1320000000
+2021-07-28,Heatwave,Canada,North America,70000,38,72,0.58,420000000
+2021-09-14,Hurricane,USA,North America,82000,96,14,0.89,2100000000
+2021-11-25,Volcanic,Indonesia,Asia,48000,115,28,0.74,980000000
+2022-01-30,Flood,Pakistan,Asia,180000,125,54,0.66,1450000000
+2022-04-12,Tornado,USA,North America,32000,55,8,0.91,730000000
+2022-06-20,Drought,Somalia,Africa,250000,45,150,0.52,95000000
+2022-08-08,Earthquake,Afghanistan,Asia,72000,142,32,0.71,620000000
+2022-10-16,Hurricane,Mexico,North America,58000,81,16,0.86,1280000000
+2023-02-06,Earthquake,Turkey,Europe,95000,235,26,0.77,3800000000
+2023-04-22,Flood,Italy,Europe,42000,38,40,0.73,560000000
+2023-06-15,Wildfire,Greece,Europe,36000,48,30,0.69,410000000
+2023-08-25,Hurricane,USA,North America,88000,102,11,0.92,2350000000
+2023-10-10,Earthquake,Morocco,Africa,62000,158,34,0.68,920000000
+2024-01-15,Flood,Australia,Oceania,52000,22,38,0.79,680000000
+2024-03-08,Cyclone,Madagascar,Africa,78000,94,44,0.64,340000000
+2024-05-12,Tornado,USA,North America,29000,36,7,0.94,580000000
+2024-07-20,Earthquake,Japan,Asia,67000,88,21,0.83,1540000000
+2024-09-05,Wildfire,Canada,North America,44000,31,26,0.72,710000000
