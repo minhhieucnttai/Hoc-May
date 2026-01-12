@@ -46,3 +46,7 @@ build/
 
 # Streamlit cache
 .streamlit/
+
+# CatBoost training info
+catboost_info/
+*/catboost_info/
