@@ -85,10 +85,17 @@ def create_severity_index(df):
         )
         
         # Normalize to 0-10 scale
-        df_fe['severity_index'] = (
-            (df_fe['severity_index'] - df_fe['severity_index'].min()) / 
-            (df_fe['severity_index'].max() - df_fe['severity_index'].min()) * 10
-        )
+        min_val = df_fe['severity_index'].min()
+        max_val = df_fe['severity_index'].max()
+        
+        if max_val != min_val:
+            df_fe['severity_index'] = (
+                (df_fe['severity_index'] - min_val) / 
+                (max_val - min_val) * 10
+            )
+        else:
+            # All values are the same, set to middle of scale
+            df_fe['severity_index'] = 5.0
         
         print("Severity index created (scale 0-10)")
     

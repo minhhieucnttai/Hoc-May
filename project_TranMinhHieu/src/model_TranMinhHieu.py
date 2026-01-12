@@ -135,7 +135,7 @@ class DisasterResponseModel:
         )
         
         # Scale features
-        if scale_features and self.model_type != 'linear':
+        if scale_features:
             X_train_scaled = self.scaler.fit_transform(X_train)
             X_test_scaled = self.scaler.transform(X_test)
         else:
