@@ -202,7 +202,7 @@ trong công tác ứng phó thảm họa.
     return best_model, importance_df, optimized_results
 
 
-def create_sample_data(n_samples: int = 50002) -> pd.DataFrame:
+def create_sample_data(n_samples: int = 50000) -> pd.DataFrame:
     """
     Tạo dữ liệu mẫu cho việc demo.
     

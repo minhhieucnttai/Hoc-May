@@ -443,6 +443,7 @@ with tab4:
             })
             
             # Feature engineering
+            # Disable time feature creation since we already have year/month from input
             input_data = engineer_features(input_data, create_time=False)
             
             # Log transform

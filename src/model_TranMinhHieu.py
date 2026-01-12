@@ -190,7 +190,8 @@ def train_optimized_model(X_train: pd.DataFrame,
                           X_val: pd.DataFrame = None,
                           y_val: pd.Series = None,
                           cat_features: List[int] = None,
-                          params: Dict = None) -> CatBoostRegressor:
+                          params: Dict = None,
+                          verbose: int = 100) -> CatBoostRegressor:
     """
     Huấn luyện mô hình tối ưu với early stopping.
     
@@ -208,6 +209,8 @@ def train_optimized_model(X_train: pd.DataFrame,
         Indices của categorical features
     params : Dict
         Tham số mô hình
+    verbose : int
+        Verbosity level (0=silent, 100=print every 100 iterations)
         
     Returns:
     --------
@@ -224,7 +227,7 @@ def train_optimized_model(X_train: pd.DataFrame,
     
     model = CatBoostRegressor(
         loss_function='RMSE',
-        verbose=100,
+        verbose=verbose,
         random_seed=42,
         **params
     )
