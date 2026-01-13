@@ -1,0 +1,15 @@
+# CatBoost training cache
+catboost_info/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
