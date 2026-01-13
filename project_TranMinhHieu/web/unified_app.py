@@ -1,21 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Unified Web Dashboard - Streamlit Application
-==============================================
-Giao diện web trực quan để dự đoán số ngày phục hồi sau thảm họa.
-PHIÊN BẢN ĐỘC LẬP - KHÔNG PHỤ THUỘC VÀO CÁC MODULE KHÁC
-
-Chức năng:
-- Load dữ liệu thực từ CSV
-- Hiển thị biểu đồ phân tích (EDA)
-- Nhập thông tin và dự đoán recovery_days
-- Hiển thị Feature Importance và SHAP
-
-Chạy ứng dụng:
-    streamlit run unified_app.py
-
-Tác giả: Trần Minh Hiếu
-"""
 
 import streamlit as st
 import pandas as pd
@@ -714,6 +697,6 @@ st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #888; padding: 1rem;">
     <p>📚 Machine Learning Project - Recovery Days Prediction</p>
-    <p>Tác giả: Trần Minh Hiếu | © 2024</p>
+    <p>Tác giả: Trần Minh Hiếu | © 2026</p>
 </div>
 """, unsafe_allow_html=True)
