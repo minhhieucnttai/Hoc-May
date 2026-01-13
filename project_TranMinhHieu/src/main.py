@@ -26,6 +26,11 @@ def main():
     print(" "*15 + "DISASTER RESPONSE ANALYSIS PIPELINE")
     print("="*70 + "\n")
     
+    # Change to project root directory
+    project_root = Path(__file__).parent.parent
+    import os
+    os.chdir(project_root)
+    
     # Create necessary directories
     Path('outputs').mkdir(exist_ok=True)
     Path('models').mkdir(exist_ok=True)
@@ -62,16 +67,16 @@ def main():
     df_engineered.to_csv('data/global_disaster_response_2018_2024_engineered.csv', index=False)
     print("\nEngineered data saved to: data/global_disaster_response_2018_2024_engineered.csv")
     
-    # Step 4: Model Training - Response Effectiveness Prediction
+    # Step 4: Model Training - Recovery Days Prediction
     print("\n" + "="*70)
-    print("STEP 4: MODEL TRAINING - RESPONSE EFFECTIVENESS PREDICTION")
+    print("STEP 4: MODEL TRAINING - RECOVERY DAYS PREDICTION")
     print("="*70)
     
     # Define features for modeling
     feature_cols = [
-        'affected_population', 'casualties', 'economic_impact_usd',
-        'response_time_hours', 'severity_index', 'casualty_rate',
-        'disaster_type_encoded', 'region_encoded'
+        'severity_index', 'casualties', 'economic_loss_usd',
+        'response_time_hours', 'aid_amount_usd', 'response_efficiency_score',
+        'casualty_per_hour', 'aid_coverage_ratio'
     ]
     
     # Filter to only available features
@@ -87,7 +92,7 @@ def main():
     print("-"*70)
     
     model = DisasterResponseModel(model_type='random_forest', task='regression')
-    X, y = model.prepare_features(df_engineered, 'response_effectiveness', available_features)
+    X, y = model.prepare_features(df_engineered, 'recovery_days', available_features)
     results = model.train(X, y, test_size=0.2)
     
     # Cross-validation
@@ -97,7 +102,7 @@ def main():
     feature_importance = model.get_feature_importance(top_n=10)
     
     # Save the model
-    model.save_model('models/response_effectiveness_rf_model.pkl')
+    model.save_model('models/recovery_days_rf_model.pkl')
     
     # Step 5: Model Evaluation
     print("\n" + "="*70)
@@ -106,7 +111,7 @@ def main():
     
     metrics = generate_evaluation_report(
         model, results['X_test'], results['y_test'],
-        model_name='Random_Forest_Response_Effectiveness',
+        model_name='Random_Forest_Recovery_Days',
         task='regression'
     )
     
@@ -128,8 +133,8 @@ def main():
     print("="*70)
     
     casualty_features = [
-        'affected_population', 'economic_impact_usd', 'response_time_hours',
-        'disaster_type_encoded', 'region_encoded', 'severity_index'
+        'severity_index', 'economic_loss_usd', 'response_time_hours',
+        'aid_amount_usd', 'response_efficiency_score', 'casualty_per_hour'
     ]
     
     available_casualty_features = [col for col in casualty_features if col in df_engineered.columns]
@@ -140,11 +145,11 @@ def main():
     )
     casualty_results = casualty_model.train(X_casualty, y_casualty, test_size=0.2)
     
-    casualty_model.save_model('models/casualty_prediction_rf_model.pkl')
+    casualty_model.save_model('models/casualties_prediction_rf_model.pkl')
     
     casualty_metrics = generate_evaluation_report(
         casualty_model, casualty_results['X_test'], casualty_results['y_test'],
-        model_name='Random_Forest_Casualty_Prediction',
+        model_name='Random_Forest_Casualties_Prediction',
         task='regression'
     )
     
@@ -153,15 +158,15 @@ def main():
     print("PIPELINE EXECUTION SUMMARY")
     print("="*70)
     
-    print("\n✓ Data loaded and preprocessed successfully")
-    print("✓ Exploratory data analysis completed")
-    print("✓ Feature engineering completed")
-    print("✓ Models trained and evaluated")
+    print("\n[OK] Data loaded and preprocessed successfully")
+    print("[OK] Exploratory data analysis completed")
+    print("[OK] Feature engineering completed")
+    print("[OK] Models trained and evaluated")
     print("\nOutput Files:")
     print("  - Preprocessed data: data/global_disaster_response_2018_2024_preprocessed.csv")
     print("  - Engineered data: data/global_disaster_response_2018_2024_engineered.csv")
-    print("  - Model 1: models/response_effectiveness_rf_model.pkl")
-    print("  - Model 2: models/casualty_prediction_rf_model.pkl")
+    print("  - Model 1: models/recovery_days_rf_model.pkl")
+    print("  - Model 2: models/casualties_prediction_rf_model.pkl")
     print("  - Visualizations: outputs/*.png")
     print("  - Model comparison: outputs/model_comparison.csv")
     

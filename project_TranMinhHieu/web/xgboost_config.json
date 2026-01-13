@@ -1,0 +1,24 @@
+{
+  "features": [
+    "severity_index",
+    "casualties",
+    "economic_loss_usd",
+    "response_time_hours",
+    "aid_amount_usd",
+    "response_efficiency_score",
+    "latitude",
+    "longitude",
+    "year",
+    "month",
+    "country_encoded",
+    "disaster_type_encoded"
+  ],
+  "metrics": {
+    "mae": 4.04581880569458,
+    "rmse": 5.08332985216032,
+    "r2": 0.9363518357276917,
+    "train_r2": 0.9542831182479858,
+    "test_r2": 0.9363518357276917
+  },
+  "model_type": "xgboost"
+}

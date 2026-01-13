@@ -355,12 +355,12 @@ if __name__ == "__main__":
         model = DisasterResponseModel(model_type='random_forest', task='regression')
         
         feature_cols = [
-            'affected_population', 'casualties', 'economic_impact_usd',
-            'response_time_hours', 'severity_index', 'casualty_rate',
-            'disaster_type_encoded', 'region_encoded'
+            'severity_index', 'casualties', 'economic_loss_usd',
+            'response_time_hours', 'aid_amount_usd', 'response_efficiency_score',
+            'casualty_per_hour', 'aid_coverage_ratio'
         ]
         
-        X, y = model.prepare_features(df_engineered, 'response_effectiveness', feature_cols)
+        X, y = model.prepare_features(df_engineered, 'recovery_days', feature_cols)
         results = model.train(X, y)
         
         # Generate evaluation report

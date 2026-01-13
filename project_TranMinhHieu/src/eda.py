@@ -137,12 +137,12 @@ def plot_geographical_distribution(df, save_fig=False):
     
     plt.figure(figsize=(14, 8))
     
-    # By region
+    # By disaster type
     plt.subplot(2, 1, 1)
-    region_counts = df['region'].value_counts()
-    sns.barplot(x=region_counts.index, y=region_counts.values, palette='coolwarm')
-    plt.title('Distribution of Disasters by Region', fontsize=14, fontweight='bold')
-    plt.xlabel('Region', fontsize=12)
+    disaster_counts = df['disaster_type'].value_counts()
+    sns.barplot(x=disaster_counts.index, y=disaster_counts.values, palette='coolwarm')
+    plt.title('Distribution of Disasters by Type', fontsize=14, fontweight='bold')
+    plt.xlabel('Disaster Type', fontsize=12)
     plt.ylabel('Count', fontsize=12)
     plt.xticks(rotation=45)
     
@@ -181,23 +181,23 @@ def plot_impact_analysis(df, save_fig=False):
     axes[0, 0].set_title('Total Casualties by Disaster Type', fontsize=12, fontweight='bold')
     axes[0, 0].set_xlabel('Total Casualties')
     
-    # Affected population by disaster type
-    affected_by_type = df.groupby('disaster_type')['affected_population'].sum().sort_values(ascending=False)
-    axes[0, 1].barh(affected_by_type.index, affected_by_type.values, color='orange')
-    axes[0, 1].set_title('Total Affected Population by Disaster Type', fontsize=12, fontweight='bold')
-    axes[0, 1].set_xlabel('Total Affected Population')
+    # Severity index by disaster type
+    severity_by_type = df.groupby('disaster_type')['severity_index'].mean().sort_values(ascending=False)
+    axes[0, 1].barh(severity_by_type.index, severity_by_type.values, color='orange')
+    axes[0, 1].set_title('Average Severity Index by Disaster Type', fontsize=12, fontweight='bold')
+    axes[0, 1].set_xlabel('Average Severity Index')
     
     # Economic impact by disaster type
-    economic_by_type = df.groupby('disaster_type')['economic_impact_usd'].sum().sort_values(ascending=False)
+    economic_by_type = df.groupby('disaster_type')['economic_loss_usd'].sum().sort_values(ascending=False)
     axes[1, 0].barh(economic_by_type.index, economic_by_type.values / 1e9, color='green')
-    axes[1, 0].set_title('Total Economic Impact by Disaster Type', fontsize=12, fontweight='bold')
-    axes[1, 0].set_xlabel('Economic Impact (Billion USD)')
+    axes[1, 0].set_title('Total Economic Loss by Disaster Type', fontsize=12, fontweight='bold')
+    axes[1, 0].set_xlabel('Economic Loss (Billion USD)')
     
-    # Response effectiveness by disaster type
-    response_by_type = df.groupby('disaster_type')['response_effectiveness'].mean().sort_values(ascending=False)
+    # Response efficiency by disaster type
+    response_by_type = df.groupby('disaster_type')['response_efficiency_score'].mean().sort_values(ascending=False)
     axes[1, 1].barh(response_by_type.index, response_by_type.values, color='steelblue')
-    axes[1, 1].set_title('Average Response Effectiveness by Disaster Type', fontsize=12, fontweight='bold')
-    axes[1, 1].set_xlabel('Average Response Effectiveness')
+    axes[1, 1].set_title('Average Response Efficiency by Disaster Type', fontsize=12, fontweight='bold')
+    axes[1, 1].set_xlabel('Average Response Efficiency Score')
     axes[1, 1].set_xlim(0, 1)
     
     plt.tight_layout()

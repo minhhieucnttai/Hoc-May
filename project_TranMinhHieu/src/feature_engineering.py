@@ -58,46 +58,48 @@ def create_severity_index(df):
     """
     df_fe = df.copy()
     
-    # Normalize the impact factors
-    scaler = StandardScaler()
-    
-    impact_features = ['casualties', 'affected_population', 'economic_impact_usd']
-    available_features = [f for f in impact_features if f in df_fe.columns]
-    
-    if available_features:
-        df_normalized = pd.DataFrame(
-            scaler.fit_transform(df_fe[available_features]),
-            columns=[f + '_normalized' for f in available_features],
-            index=df_fe.index
-        )
+    # Use existing severity_index if available
+    if 'severity_index' not in df_fe.columns:
+        # Normalize the impact factors
+        scaler = StandardScaler()
         
-        # Calculate severity index as weighted average
-        weights = {
-            'casualties_normalized': 0.4,
-            'affected_population_normalized': 0.3,
-            'economic_impact_usd_normalized': 0.3
-        }
+        impact_features = ['casualties', 'economic_loss_usd']
+        available_features = [f for f in impact_features if f in df_fe.columns]
         
-        df_fe['severity_index'] = sum(
-            df_normalized[col] * weight 
-            for col, weight in weights.items() 
-            if col in df_normalized.columns
-        )
-        
-        # Normalize to 0-10 scale
-        min_val = df_fe['severity_index'].min()
-        max_val = df_fe['severity_index'].max()
-        
-        if max_val != min_val:
-            df_fe['severity_index'] = (
-                (df_fe['severity_index'] - min_val) / 
-                (max_val - min_val) * 10
+        if available_features:
+            df_normalized = pd.DataFrame(
+                scaler.fit_transform(df_fe[available_features]),
+                columns=[f + '_normalized' for f in available_features],
+                index=df_fe.index
             )
-        else:
-            # All values are the same, set to middle of scale
-            df_fe['severity_index'] = 5.0
-        
-        print("Severity index created (scale 0-10)")
+            
+            # Calculate severity index as weighted average
+            weights = {
+                'casualties_normalized': 0.5,
+                'economic_loss_usd_normalized': 0.5
+            }
+            
+            df_fe['severity_index_calc'] = sum(
+                df_normalized[col] * weight 
+                for col, weight in weights.items() 
+                if col in df_normalized.columns
+            )
+            
+            # Normalize to 0-10 scale
+            min_val = df_fe['severity_index_calc'].min()
+            max_val = df_fe['severity_index_calc'].max()
+            
+            if max_val != min_val:
+                df_fe['severity_index_calc'] = (
+                    (df_fe['severity_index_calc'] - min_val) / 
+                    (max_val - min_val) * 10
+                )
+            else:
+                df_fe['severity_index_calc'] = 5.0
+            
+            print("Severity index calculated (scale 0-10)")
+    else:
+        print("Severity index already exists in dataset")
     
     return df_fe
 
@@ -127,19 +129,14 @@ def create_response_features(df):
         )
         print("Response speed categories created")
     
-    # Response effectiveness categories
-    if 'response_effectiveness' in df_fe.columns:
+    # Response efficiency score categories
+    if 'response_efficiency_score' in df_fe.columns:
         df_fe['response_quality'] = pd.cut(
-            df_fe['response_effectiveness'],
-            bins=[0, 0.5, 0.7, 0.85, 1.0],
+            df_fe['response_efficiency_score'],
+            bins=[0, 25, 50, 75, 100],
             labels=['Poor', 'Fair', 'Good', 'Excellent']
         )
         print("Response quality categories created")
-    
-    # Create efficiency metric (effectiveness / response_time)
-    if 'response_effectiveness' in df_fe.columns and 'response_time_hours' in df_fe.columns:
-        df_fe['response_efficiency'] = df_fe['response_effectiveness'] / (df_fe['response_time_hours'] + 1)
-        print("Response efficiency metric created")
     
     return df_fe
 
@@ -160,20 +157,20 @@ def create_impact_ratios(df):
     """
     df_fe = df.copy()
     
-    # Casualty rate (casualties per affected population)
-    if 'casualties' in df_fe.columns and 'affected_population' in df_fe.columns:
-        df_fe['casualty_rate'] = df_fe['casualties'] / (df_fe['affected_population'] + 1)
-        print("Casualty rate created")
-    
-    # Economic impact per person
-    if 'economic_impact_usd' in df_fe.columns and 'affected_population' in df_fe.columns:
-        df_fe['economic_impact_per_capita'] = df_fe['economic_impact_usd'] / (df_fe['affected_population'] + 1)
-        print("Economic impact per capita created")
+    # Casualty rate (casualties per response hour)
+    if 'casualties' in df_fe.columns and 'response_time_hours' in df_fe.columns:
+        df_fe['casualty_per_hour'] = df_fe['casualties'] / (df_fe['response_time_hours'] + 1)
+        print("Casualty per hour rate created")
     
     # Economic impact per casualty
-    if 'economic_impact_usd' in df_fe.columns and 'casualties' in df_fe.columns:
-        df_fe['economic_impact_per_casualty'] = df_fe['economic_impact_usd'] / (df_fe['casualties'] + 1)
+    if 'economic_loss_usd' in df_fe.columns and 'casualties' in df_fe.columns:
+        df_fe['economic_impact_per_casualty'] = df_fe['economic_loss_usd'] / (df_fe['casualties'] + 1)
         print("Economic impact per casualty created")
+    
+    # Aid to economic loss ratio
+    if 'aid_amount_usd' in df_fe.columns and 'economic_loss_usd' in df_fe.columns:
+        df_fe['aid_coverage_ratio'] = df_fe['aid_amount_usd'] / (df_fe['economic_loss_usd'] + 1)
+        print("Aid coverage ratio created")
     
     return df_fe
 
@@ -234,17 +231,17 @@ def create_aggregated_features(df):
         df_fe['avg_casualties_by_type'] = disaster_avg_casualties
         print("Average casualties by disaster type created")
     
-    # Average response time by region
-    if 'region' in df_fe.columns and 'response_time_hours' in df_fe.columns:
-        region_avg_response = df_fe.groupby('region')['response_time_hours'].transform('mean')
-        df_fe['avg_response_time_by_region'] = region_avg_response
-        print("Average response time by region created")
+    # Average response time by country
+    if 'country' in df_fe.columns and 'response_time_hours' in df_fe.columns:
+        country_avg_response = df_fe.groupby('country')['response_time_hours'].transform('mean')
+        df_fe['avg_response_time_by_country'] = country_avg_response
+        print("Average response time by country created")
     
-    # Average effectiveness by country
-    if 'country' in df_fe.columns and 'response_effectiveness' in df_fe.columns:
-        country_avg_effectiveness = df_fe.groupby('country')['response_effectiveness'].transform('mean')
-        df_fe['avg_effectiveness_by_country'] = country_avg_effectiveness
-        print("Average effectiveness by country created")
+    # Average efficiency by disaster type
+    if 'disaster_type' in df_fe.columns and 'response_efficiency_score' in df_fe.columns:
+        disaster_avg_efficiency = df_fe.groupby('disaster_type')['response_efficiency_score'].transform('mean')
+        df_fe['avg_efficiency_by_type'] = disaster_avg_efficiency
+        print("Average efficiency by disaster type created")
     
     return df_fe
 
