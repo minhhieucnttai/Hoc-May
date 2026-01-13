@@ -1,8 +1,3 @@
-"""
-Model Evaluation Module
-Provides comprehensive model evaluation metrics and visualizations.
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

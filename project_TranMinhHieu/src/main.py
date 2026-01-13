@@ -1,8 +1,3 @@
-"""
-Main Module
-Orchestrates the entire disaster response analysis pipeline.
-"""
-
 import sys
 from pathlib import Path
 import warnings
@@ -40,7 +35,7 @@ def main():
     print("STEP 1: DATA LOADING AND PREPROCESSING")
     print("="*70)
     
-    data_path = 'data/global_disaster_response_2018_2024.csv'
+    data_path = r'data/global_disaster_response_2018_2024.csv'
     df = load_data(data_path)
     
     if df is None:
