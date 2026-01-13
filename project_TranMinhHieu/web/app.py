@@ -1,20 +1,3 @@
-"""
-Web Dashboard - Streamlit Application
-=====================================
-Giao diện web trực quan để dự đoán số ngày phục hồi sau thảm họa.
-
-Chức năng:
-- Tải dữ liệu hoặc sử dụng dữ liệu mẫu
-- Hiển thị biểu đồ phân tích (EDA)
-- Nhập thông tin và dự đoán recovery_days
-- Hiển thị Feature Importance và SHAP
-
-Chạy ứng dụng:
-    streamlit run web/streamlit_app.py
-
-Tác giả: Trần Minh Hiếu
-"""
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -26,7 +9,7 @@ import sys
 import os
 
 # Thêm đường dẫn src vào path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname("project_TranMinhHieu/web/data/global_disaster_response_2018_2024.csv"), '..', 'src'))
 
 from preprocessing import load_data, preprocess_data, get_categorical_features
 from eda import perform_eda, get_data_summary

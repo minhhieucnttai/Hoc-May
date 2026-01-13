@@ -1,0 +1,34 @@
+{
+  "feature_cols": [
+    "country",
+    "disaster_type",
+    "severity_index",
+    "casualties",
+    "response_time_hours",
+    "response_efficiency_score",
+    "latitude",
+    "longitude",
+    "economic_loss_usd_log",
+    "aid_amount_usd_log",
+    "year",
+    "month",
+    "loss_per_casualty",
+    "aid_per_hour",
+    "severity_response_ratio",
+    "aid_efficiency"
+  ],
+  "categorical_features": [
+    "country",
+    "disaster_type"
+  ],
+  "train_metrics": {
+    "MAE": 3.975061856929145,
+    "RMSE": 4.977838158330269,
+    "R2": 0.9385829808207405
+  },
+  "test_metrics": {
+    "MAE": 3.9971322052617384,
+    "RMSE": 5.021197516305714,
+    "R2": 0.937898255209219
+  }
+}
