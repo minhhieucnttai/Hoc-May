@@ -231,11 +231,20 @@ st.sidebar.write(f"- Recovery Days: **{df['recovery_days'].min():.0f} - {df['rec
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("""
-### 🏷️ Disaster Types
+### 🏷️ Loại thảm họa (10)
 """)
-for dtype in df['disaster_type'].unique()[:5]:
+for dtype in sorted(df['disaster_type'].unique()):
     count = len(df[df['disaster_type'] == dtype])
     st.sidebar.write(f"- {dtype}: {count:,}")
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("""
+### 🌍 Quốc gia (20)
+""")
+with st.sidebar.expander("Xem danh sách 20 quốc gia"):
+    for country in sorted(df['country'].unique()):
+        count = len(df[df['country'] == country])
+        st.write(f"- {country}: {count:,}")
 
 
 # =========================================================
@@ -388,130 +397,129 @@ with tab3:
     
     if not HAS_CATBOOST:
         st.error("❌ CatBoost chưa được cài đặt. Vui lòng chạy: pip install catboost")
-        st.stop()
+    else:
+        st.markdown("""
+        ### Mô hình: CatBoost Regressor
+        
+        **Lý do chọn CatBoost:**
+        - ✅ Xử lý tốt biến phân loại (country, disaster_type)
+        - ✅ Không cần One-Hot Encoding
+        - ✅ Hiệu suất cao với dataset vừa-lớn
+        - ✅ Ít overfitting với Ordered Boosting
+        """)
     
-    st.markdown("""
-    ### Mô hình: CatBoost Regressor
-    
-    **Lý do chọn CatBoost:**
-    - ✅ Xử lý tốt biến phân loại (country, disaster_type)
-    - ✅ Không cần One-Hot Encoding
-    - ✅ Hiệu suất cao với dataset vừa-lớn
-    - ✅ Ít overfitting với Ordered Boosting
-    """)
-    
-    st.markdown("---")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        test_size = st.slider("Test size (%)", 10, 40, 20) / 100
-        iterations = st.slider("Số iterations", 100, 1000, 300)
-        learning_rate = st.select_slider("Learning rate", 
-                                        options=[0.01, 0.03, 0.05, 0.1, 0.2],
-                                        value=0.1)
-    
-    with col2:
-        depth = st.slider("Depth", 4, 12, 6)
-        l2_leaf_reg = st.slider("L2 regularization", 1, 10, 3)
-    
-    if st.button("🚀 Huấn luyện mô hình", type="primary"):
-        with st.spinner("Đang huấn luyện mô hình..."):
-            # Chuẩn bị dữ liệu
-            X, y, encoders, feature_names = prepare_features_for_model(df, 'recovery_days')
-            
-            # Chia dữ liệu
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=test_size, random_state=42
-            )
-            
-            # Xác định categorical features
-            cat_features = [i for i, col in enumerate(X.columns) if '_encoded' in col]
-            
-            # Train model
-            model = CatBoostRegressor(
-                iterations=iterations,
-                learning_rate=learning_rate,
-                depth=depth,
-                l2_leaf_reg=l2_leaf_reg,
-                random_state=42,
-                verbose=False
-            )
-            
-            model.fit(X_train, y_train, cat_features=cat_features)
-            
-            # Dự đoán và đánh giá
-            y_pred = model.predict(X_test)
-            metrics = calculate_metrics(y_test.values, y_pred)
-            
-            # Lưu vào session state
-            st.session_state['model'] = model
-            st.session_state['X'] = X
-            st.session_state['feature_names'] = feature_names
-            st.session_state['encoders'] = encoders
-            st.session_state['cat_features'] = cat_features
-            
-            st.success("✅ Đã huấn luyện xong mô hình!")
-            
-            # Hiển thị kết quả
-            st.markdown("### 📊 Kết quả đánh giá")
-            
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("MAE", f"{metrics['MAE']:.2f} ngày")
-            with col2:
-                st.metric("RMSE", f"{metrics['RMSE']:.2f} ngày")
-            with col3:
-                st.metric("R² Score", f"{metrics['R2']:.4f}")
-            with col4:
-                st.metric("MAPE", f"{metrics['MAPE']:.2f}%")
-            
-            st.markdown("---")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.subheader("Actual vs Predicted")
-                fig = px.scatter(x=y_test, y=y_pred, opacity=0.3,
-                               labels={'x': 'Actual', 'y': 'Predicted'})
-                fig.add_trace(go.Scatter(
-                    x=[y_test.min(), y_test.max()],
-                    y=[y_test.min(), y_test.max()],
-                    mode='lines',
-                    name='Perfect Prediction',
-                    line=dict(color='red', dash='dash')
-                ))
-                st.plotly_chart(fig, use_container_width=True)
-            
-            with col2:
-                st.subheader("Feature Importance")
-                importances = model.get_feature_importance()
-                importance_df = pd.DataFrame({
-                    'feature': X.columns,
-                    'importance': importances
-                }).sort_values('importance', ascending=False)
+        st.markdown("---")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            test_size = st.slider("Test size (%)", 10, 40, 20) / 100
+            iterations = st.slider("Số iterations", 100, 1000, 300)
+            learning_rate = st.select_slider("Learning rate", 
+                                            options=[0.01, 0.03, 0.05, 0.1, 0.2],
+                                            value=0.1)
+        
+        with col2:
+            depth = st.slider("Depth", 4, 12, 6)
+            l2_leaf_reg = st.slider("L2 regularization", 1, 10, 3)
+        
+        if st.button("🚀 Huấn luyện mô hình", type="primary"):
+            with st.spinner("Đang huấn luyện mô hình..."):
+                # Chuẩn bị dữ liệu
+                X, y, encoders, feature_names = prepare_features_for_model(df, 'recovery_days')
                 
-                fig = px.bar(importance_df.head(15), x='importance', y='feature',
-                           orientation='h')
-                fig.update_layout(yaxis={'categoryorder': 'total ascending'})
-                st.plotly_chart(fig, use_container_width=True)
-            
-            # SHAP Explainability
-            if HAS_SHAP:
+                # Chia dữ liệu
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X, y, test_size=test_size, random_state=42
+                )
+                
+                # Xác định categorical features
+                cat_features = [i for i, col in enumerate(X.columns) if '_encoded' in col]
+                
+                # Train model
+                model = CatBoostRegressor(
+                    iterations=iterations,
+                    learning_rate=learning_rate,
+                    depth=depth,
+                    l2_leaf_reg=l2_leaf_reg,
+                    random_state=42,
+                    verbose=False
+                )
+                
+                model.fit(X_train, y_train, cat_features=cat_features)
+                
+                # Dự đoán và đánh giá
+                y_pred = model.predict(X_test)
+                metrics = calculate_metrics(y_test.values, y_pred)
+                
+                # Lưu vào session state
+                st.session_state['model'] = model
+                st.session_state['X'] = X
+                st.session_state['feature_names'] = feature_names
+                st.session_state['encoders'] = encoders
+                st.session_state['cat_features'] = cat_features
+                
+                st.success("✅ Đã huấn luyện xong mô hình!")
+                
+                # Hiển thị kết quả
+                st.markdown("### 📊 Kết quả đánh giá")
+                
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("MAE", f"{metrics['MAE']:.2f} ngày")
+                with col2:
+                    st.metric("RMSE", f"{metrics['RMSE']:.2f} ngày")
+                with col3:
+                    st.metric("R² Score", f"{metrics['R2']:.4f}")
+                with col4:
+                    st.metric("MAPE", f"{metrics['MAPE']:.2f}%")
+                
                 st.markdown("---")
-                st.subheader("🔍 SHAP Explainability")
                 
-                with st.spinner("Đang tính SHAP values..."):
-                    sample_size = min(500, len(X_test))
-                    X_sample = X_test.sample(n=sample_size, random_state=42)
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.subheader("Actual vs Predicted")
+                    fig = px.scatter(x=y_test, y=y_pred, opacity=0.3,
+                                   labels={'x': 'Actual', 'y': 'Predicted'})
+                    fig.add_trace(go.Scatter(
+                        x=[y_test.min(), y_test.max()],
+                        y=[y_test.min(), y_test.max()],
+                        mode='lines',
+                        name='Perfect Prediction',
+                        line=dict(color='red', dash='dash')
+                    ))
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                with col2:
+                    st.subheader("Feature Importance")
+                    importances = model.get_feature_importance()
+                    importance_df = pd.DataFrame({
+                        'feature': X.columns,
+                        'importance': importances
+                    }).sort_values('importance', ascending=False)
                     
-                    explainer = shap.Explainer(model)
-                    shap_values = explainer(X_sample)
+                    fig = px.bar(importance_df.head(15), x='importance', y='feature',
+                               orientation='h')
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                # SHAP Explainability
+                if HAS_SHAP:
+                    st.markdown("---")
+                    st.subheader("🔍 SHAP Explainability")
                     
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    shap.summary_plot(shap_values, X_sample, show=False)
-                    st.pyplot(fig)
-                    plt.close()
+                    with st.spinner("Đang tính SHAP values..."):
+                        sample_size = min(500, len(X_test))
+                        X_sample = X_test.sample(n=sample_size, random_state=42)
+                        
+                        explainer = shap.Explainer(model)
+                        shap_values = explainer(X_sample)
+                        
+                        fig, ax = plt.subplots(figsize=(10, 6))
+                        shap.summary_plot(shap_values, X_sample, show=False)
+                        st.pyplot(fig)
+                        plt.close()
 
 
 # =========================================================
