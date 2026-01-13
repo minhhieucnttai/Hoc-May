@@ -101,6 +101,7 @@ st.sidebar.markdown("""
 - **Dataset**: Global Disaster Response 2018-2024
 - **Target**: Recovery Days (số ngày phục hồi)
 - **Task**: Regression
+- **Phân bố**: Min: 1 ngày, Mean: ~45 ngày, Max: ~150 ngày
 """)
 
 # =========================================================
@@ -145,18 +146,23 @@ if y_pred is not None:
         plt.close()
     
     with col2:
-        # Hiển thị metrics
+        # Hiển thị metrics cho bài toán Regression
         mae = mean_absolute_error(y_test, y_pred)
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
         r2 = r2_score(y_test, y_pred)
+        mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
         
         st.metric("MAE", f"{mae:.2f} ngày")
         st.metric("RMSE", f"{rmse:.2f} ngày")
         st.metric("R² Score", f"{r2:.4f}")
+        st.metric("MAPE", f"{mape:.2f}%")
     
     st.markdown("""
     📌 **Ý nghĩa**: Biểu đồ cho thấy mức độ phù hợp giữa giá trị dự đoán và thực tế. 
     Các điểm càng gần đường y = x thì mô hình dự đoán càng chính xác.
+    
+    ⚠️ **Lưu ý**: Đây là bài toán **HỒI QUY (Regression)** với biến liên tục recovery_days (1-150 ngày).  
+    Do đó sử dụng các metrics: MAE, RMSE, R², MAPE thay vì Confusion Matrix, Precision, Recall.
     """)
 else:
     st.warning("⚠️ Chưa có dữ liệu dự đoán")
@@ -265,7 +271,7 @@ st.table(comparison_df)
 
 # Nếu có nhiều model, hiển thị so sánh thực tế
 if len(models) > 1:
-    st.subheader("So sánh chi tiết các mô hình")
+    st.subheader("So sánh chi tiết các mô hình (Regression Metrics)")
     
     comparison_results = []
     for name, m in models.items():
@@ -273,11 +279,13 @@ if len(models) > 1:
         mae = mean_absolute_error(y_test, pred)
         rmse = np.sqrt(mean_squared_error(y_test, pred))
         r2 = r2_score(y_test, pred)
+        mape = np.mean(np.abs((y_test - pred) / y_test)) * 100
         comparison_results.append({
             "Mô hình": name,
             "MAE": f"{mae:.2f}",
             "RMSE": f"{rmse:.2f}",
-            "R²": f"{r2:.4f}"
+            "R²": f"{r2:.4f}",
+            "MAPE": f"{mape:.2f}%"
         })
     
     comparison_detail_df = pd.DataFrame(comparison_results)
