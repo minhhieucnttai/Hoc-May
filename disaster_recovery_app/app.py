@@ -25,6 +25,7 @@ import shap
 import pickle
 import os
 from pathlib import Path
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 # =========================================================
 # CẤU HÌNH TRANG
@@ -145,8 +146,6 @@ if y_pred is not None:
     
     with col2:
         # Hiển thị metrics
-        from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-        
         mae = mean_absolute_error(y_test, y_pred)
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
         r2 = r2_score(y_test, y_pred)
@@ -225,8 +224,9 @@ if model is not None and model_name == "CatBoost":
         """)
         
         with st.spinner("Đang tính SHAP values..."):
-            # Sử dụng một subset nhỏ để tính nhanh hơn
-            sample_size = min(100, len(X_test))
+            # Sử dụng một subset để tính nhanh hơn
+            # Sử dụng 10% dữ liệu với tối thiểu 100 và tối đa 500 mẫu
+            sample_size = max(100, min(500, int(len(X_test) * 0.1)))
             X_sample = X_test.sample(n=sample_size, random_state=42)
             
             explainer = shap.Explainer(model)

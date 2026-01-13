@@ -42,13 +42,27 @@ def load_and_preprocess_data(data_path):
     print("Loading data...")
     df = pd.read_csv(data_path)
     
-    # Convert date to datetime
+    # Convert date to datetime with explicit format detection
     if 'date' in df.columns:
-        df['date'] = pd.to_datetime(df['date'], errors='coerce', dayfirst=True)
+        # Try multiple date formats
+        date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%m/%d/%Y']
+        for fmt in date_formats:
+            try:
+                df['date'] = pd.to_datetime(df['date'], format=fmt, errors='coerce')
+                if df['date'].notna().sum() > len(df) * 0.9:  # If >90% parsed successfully
+                    break
+            except (ValueError, TypeError):
+                continue
         df['year'] = df['date'].dt.year
         df['month'] = df['date'].dt.month
     
-    # Handle missing values
+    # Handle missing values with imputation for numeric columns
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    for col in numeric_cols:
+        if df[col].isnull().any():
+            df[col] = df[col].fillna(df[col].median())
+    
+    # Drop rows with remaining missing values in categorical columns
     df = df.dropna()
     
     print(f"Data shape: {df.shape}")
